@@ -16,7 +16,7 @@ struct ContentView: View {
                 SearchView(movieRepository: movieRepository)
             }
             Tab("Favorites", systemImage: "star.fill") {
-                FavoritesView(movieRepository: movieRepository)
+                FavoritesView()
             }
         }
     }

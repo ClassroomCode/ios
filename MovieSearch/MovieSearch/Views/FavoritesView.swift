@@ -12,18 +12,14 @@ struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     
-    let movieRepository: any MovieRepository
-    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(movieRepository.favorites) { movie in
+                ForEach(favorites) { favorite in
                     NavigationLink {
-                        MovieDetailView(movie: movie)
+                        MovieDetailView(movie: favorite.movie)
                     } label: {
-                        MovieFavoriteView(movie: movie, removeFavoriteFunction: {
-                            movieRepository.removeFavorite($0)
-                        })
+                        MovieFavoriteView(favorite: favorite)
                     }
                 }
             }
@@ -33,16 +29,17 @@ struct FavoritesView: View {
 }
 
 #Preview {
-    FavoritesView(movieRepository: MovieStatic())
+    FavoritesView()
+        .modelContainer(for: [Favorite.self], inMemory: true)
 }
 
 struct MovieFavoriteView: View {
-    let movie: Movie
-    let removeFavoriteFunction: (Movie) -> Void
+    @Environment(\.modelContext) private var modelContext
+    let favorite: Favorite
     
     var body: some View {
         HStack {
-            AsyncImage(url: movie.poster, scale: 0.1) { img in
+            AsyncImage(url: favorite.poster, scale: 0.1) { img in
                 img
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -51,11 +48,11 @@ struct MovieFavoriteView: View {
                 Image(systemName: "photo")
             }
             
-            Text("\(movie.title) (\(movie.year))")
+            Text("\(favorite.title) (\(favorite.year))")
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                removeFavoriteFunction(movie)
+                modelContext.delete(favorite)
             } label: {
                 Image(systemName: "trash.fill")
             }

@@ -19,18 +19,24 @@ struct SearchView: View {
                     NavigationLink {
                         MovieDetailView(movie: movie)
                     } label: {
-                        MovieResultView(movie: movie, addFavoriteFunction: {
-                            movieRepository.addFavorite($0)
-                        })
+                        MovieResultView(movie: movie)
                     }
                 }
             }
             .searchable(text: $searchText)
+            .task(id: searchText) {
+                // check some stuff
+                // delay
+                // do the search if not cancelled
+            }
+            
+            /*
             .onSubmit(of: .search) {
                 Task {
                     self.searchResults = await movieRepository.search(q: searchText)
                 }
             }
+             */
             .navigationTitle(Text("Search"))
         }
     }
@@ -38,11 +44,12 @@ struct SearchView: View {
 
 #Preview {
     SearchView(movieRepository: MovieStatic())
+        .modelContainer(for: [Favorite.self], inMemory: true)
 }
 
 struct MovieResultView: View {
+    @Environment(\.modelContext) private var modelContext
     let movie: Movie
-    let addFavoriteFunction: (Movie) -> Void
     
     var body: some View {
         HStack {
@@ -59,7 +66,7 @@ struct MovieResultView: View {
         }
         .swipeActions(edge: .leading) {
             Button() {
-                addFavoriteFunction(movie)
+                modelContext.insert(Favorite(movie: movie))
             } label: {
                 Image(systemName: "star.fill")
             }

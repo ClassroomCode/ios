@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FavoritesView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
+    
     let movieRepository: any MovieRepository
     
     var body: some View {

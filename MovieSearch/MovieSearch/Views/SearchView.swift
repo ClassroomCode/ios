@@ -25,18 +25,15 @@ struct SearchView: View {
             }
             .searchable(text: $searchText)
             .task(id: searchText) {
-                // check some stuff
-                // delay
-                // do the search if not cancelled
-            }
-            
-            /*
-            .onSubmit(of: .search) {
-                Task {
-                    self.searchResults = await movieRepository.search(q: searchText)
+                guard searchText.count > 2 else {
+                    self.searchResults = []
+                    return
                 }
+                try? await Task.sleep(for: .seconds(3))
+                guard !Task.isCancelled else { return }
+                
+                self.searchResults = await movieRepository.search(q: searchText)
             }
-             */
             .navigationTitle(Text("Search"))
         }
     }

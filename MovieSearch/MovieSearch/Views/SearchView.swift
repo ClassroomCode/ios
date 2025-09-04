@@ -10,15 +10,11 @@ import SwiftUI
 struct SearchView: View {
     let movieRepository: any MovieRepository
     @State var searchResults: [Movie] = []
+    @State var searchText = ""
     
     var body: some View {
         NavigationStack {
             VStack {
-                SearchBoxView(searchFunction: {
-                    self.searchResults = await movieRepository.search(q: $0)
-                })
-                .padding()
-                
                 List {
                     ForEach(searchResults) { movie in
                         NavigationLink {
@@ -30,6 +26,12 @@ struct SearchView: View {
                         }
                     }
                 }
+                .searchable(text: $searchText)
+                .onSubmit(of: .search) {
+                    Task {
+                        self.searchResults = await movieRepository.search(q: searchText)
+                    }
+                }
             }
         }
     }
@@ -37,22 +39,6 @@ struct SearchView: View {
 
 #Preview {
     SearchView(movieRepository: MovieStatic())
-}
-
-struct SearchBoxView: View {
-    let searchFunction: (String) async -> ()
-    @State var searchText = ""
-    
-    var body: some View {
-        HStack {
-            TextField("Search Text", text: $searchText)
-            Button(action: {
-                Task { await searchFunction(searchText) }
-            }, label: {
-                Image(systemName: "magnifyingglass")
-            })
-        }
-    }
 }
 
 struct MovieResultView: View {

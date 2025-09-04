@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MovieRepository
-{    
+{
     func search(q: String) async -> [Movie]
     
     var favorites: [Movie] { get }

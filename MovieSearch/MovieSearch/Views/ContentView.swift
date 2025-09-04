@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State var movieRepository: any MovieRepository = MovieAPI()
-    
+
     var body: some View {
         TabView {
             Tab("Movies", systemImage: "film.fill") {

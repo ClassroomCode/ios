@@ -14,25 +14,24 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                List {
-                    ForEach(searchResults) { movie in
-                        NavigationLink {
-                            MovieDetailView(movie: movie)
-                        } label: {
-                            MovieResultView(movie: movie, addFavoriteFunction: {
-                                movieRepository.addFavorite($0)
-                            })
-                        }
-                    }
-                }
-                .searchable(text: $searchText)
-                .onSubmit(of: .search) {
-                    Task {
-                        self.searchResults = await movieRepository.search(q: searchText)
+            List {
+                ForEach(searchResults) { movie in
+                    NavigationLink {
+                        MovieDetailView(movie: movie)
+                    } label: {
+                        MovieResultView(movie: movie, addFavoriteFunction: {
+                            movieRepository.addFavorite($0)
+                        })
                     }
                 }
             }
+            .searchable(text: $searchText)
+            .onSubmit(of: .search) {
+                Task {
+                    self.searchResults = await movieRepository.search(q: searchText)
+                }
+            }
+            .navigationTitle(Text("Search"))
         }
     }
 }
